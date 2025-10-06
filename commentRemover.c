@@ -37,6 +37,10 @@ int main(int argc , char* argv[]){
         printf("Error: filename too long (max %d chars)\n",MAX_FILENAME_LENGTH);
         return 1;
     }
-    
+
+    char filename[MAX_FILENAME_LENGTH];
+    strcpy(filename, argv[1]);
+
+    // printf("%s\n",filename);
     return 0;
 }
