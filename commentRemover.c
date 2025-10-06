@@ -1,5 +1,9 @@
+
 #include<stdio.h>
+#include<string.h>
 #include<stdbool.h>
+
+#define MAX_FILENAME_LENGTH 255 
 
 
 bool is_input_file_provided(int argc){
@@ -8,6 +12,16 @@ bool is_input_file_provided(int argc){
     }
 
     return true;
+}
+
+bool filename_too_long (char* filename){
+    size_t length_of_filename_input = strlen(filename);
+
+    if(length_of_filename_input > MAX_FILENAME_LENGTH){
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -19,7 +33,10 @@ int main(int argc , char* argv[]){
         return 1;
     }
 
-
-
+    if(filename_too_long(argv[1])==true){
+        printf("Error: filename too long (max %d chars)\n",MAX_FILENAME_LENGTH);
+        return 1;
+    }
+    
     return 0;
 }
