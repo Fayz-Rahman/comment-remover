@@ -1,10 +1,9 @@
-
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>
 #include<stdbool.h>
 
 #define MAX_FILENAME_LENGTH 255 
-
 
 bool is_input_file_provided(int argc){
     if(argc<2){
@@ -24,6 +23,16 @@ bool filename_too_long (char* filename){
     return false;
 }
 
+void get_file_extension(char *filename, char *fileExtension){
+    char* extensionSeparatorIndex = strrchr(filename, '.');
+
+    if(extensionSeparatorIndex == NULL){
+        printf("Invalid filename: File name must include a valid extension (e.g., .py, .c, .js)\n");
+        exit(1);
+    }else{
+        strcpy(fileExtension,extensionSeparatorIndex+1);
+    }
+}
 
 
 int main(int argc , char* argv[]){
@@ -40,7 +49,11 @@ int main(int argc , char* argv[]){
 
     char filename[MAX_FILENAME_LENGTH];
     strcpy(filename, argv[1]);
+    char fileExtension[10];
+    get_file_extension(filename, fileExtension);
 
+    // printf("%s\n",fileExtension);
     // printf("%s\n",filename);
+    
     return 0;
 }
