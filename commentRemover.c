@@ -34,8 +34,55 @@ void get_file_extension(char *filename, char *fileExtension){
     }
 }
 
+void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
+    int character;
+    int matchCounter = 0;
+    int matchCounterWasOne = 0;
+    bool commentDelimiterFound = false;
+
+    while ((character = fgetc(fileReadPtr)) != EOF) {
+        if(character == '/'){
+            matchCounter ++;
+            matchCounterWasOne = 2;
+        }else{
+            matchCounter = 0;
+            matchCounterWasOne--;
+        }
+
+        if(character == '/' && matchCounter == 2) {
+            commentDelimiterFound = true;
+        }else if( matchCounterWasOne == 1 && commentDelimiterFound == false){
+            fputc('/', fileWritePtr);
+        }
+
+        if(commentDelimiterFound == true && character != '\n'){
+            continue;
+        }
+        if(character == '\n'){
+            commentDelimiterFound = false;
+        }
+
+        if(matchCounter!=1 ){
+            fputc(character, fileWritePtr);
+        }
+    }
+    
+}
 
 int main(int argc , char* argv[]){
+        
+    char filename[MAX_FILENAME_LENGTH];
+    strcpy(filename, argv[1]);
+    char fileExtension[10];
+
+    FILE* fileReadPtr = fopen(filename, "r");
+    FILE* fileWritePtr = fopen("output.txt", "w");
+    
+    
+    if (fileReadPtr == NULL || fileWritePtr == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
 
     if(!is_input_file_provided(argc)){
         printf("no input file is provided\nUsage: %s <filename>\n",argv[0]);
@@ -47,13 +94,13 @@ int main(int argc , char* argv[]){
         return 1;
     }
 
-    char filename[MAX_FILENAME_LENGTH];
-    strcpy(filename, argv[1]);
-    char fileExtension[10];
+
     get_file_extension(filename, fileExtension);
 
-    // printf("%s\n",fileExtension);
-    // printf("%s\n",filename);
+    write_to_new_file_without_comments(fileReadPtr,fileWritePtr);
+
+    fclose(fileReadPtr);
+    fclose(fileWritePtr);
     
     return 0;
 }
