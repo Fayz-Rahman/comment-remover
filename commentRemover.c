@@ -36,37 +36,27 @@ void get_file_extension(char *filename, char *fileExtension){
 
 void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
     int character;
-    int matchCounter = 0;
-    int matchCounterWasOne = 0;
     bool commentDelimiterFound = false;
 
     while ((character = fgetc(fileReadPtr)) != EOF) {
         if(character == '/'){
-            matchCounter ++;
-            matchCounterWasOne = 2;
-        }else{
-            matchCounter = 0;
-            matchCounterWasOne--;
+            int nextCharacter = fgetc(fileReadPtr);
+            if(nextCharacter == '/'){
+                commentDelimiterFound = true;
+            } else {
+                ungetc(nextCharacter, fileReadPtr);
+            }
         }
 
-        if(character == '/' && matchCounter == 2) {
-            commentDelimiterFound = true;
-        }else if( matchCounterWasOne == 1 && commentDelimiterFound == false){
-            fputc('/', fileWritePtr);
-        }
-
-        if(commentDelimiterFound == true && character != '\n'){
+        if(commentDelimiterFound && character != '\n'){
             continue;
         }
         if(character == '\n'){
             commentDelimiterFound = false;
         }
 
-        if(matchCounter!=1 ){
-            fputc(character, fileWritePtr);
-        }
+        fputc(character, fileWritePtr);
     }
-    
 }
 
 int main(int argc , char* argv[]){
