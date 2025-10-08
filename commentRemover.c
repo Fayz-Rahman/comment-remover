@@ -70,19 +70,6 @@ void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
 }
 
 int main(int argc , char* argv[]){
-        
-    char filename[MAX_FILENAME_LENGTH];
-    strcpy(filename, argv[1]);
-    char fileExtension[10];
-
-    FILE* fileReadPtr = fopen(filename, "r");
-    FILE* fileWritePtr = fopen("output.txt", "w");
-    
-    
-    if (fileReadPtr == NULL || fileWritePtr == NULL) {
-        printf("Error opening file.\n");
-        return 1;
-    }
 
     if(!is_input_file_provided(argc)){
         printf("no input file is provided\nUsage: %s <filename>\n",argv[0]);
@@ -91,6 +78,18 @@ int main(int argc , char* argv[]){
 
     if(filename_too_long(argv[1])==true){
         printf("Error: filename too long (max %d chars)\n",MAX_FILENAME_LENGTH);
+        return 1;
+    }
+
+    char filename[MAX_FILENAME_LENGTH];
+    strcpy(filename, argv[1]);
+    char fileExtension[10];
+
+    FILE* fileReadPtr = fopen(filename, "r");
+    FILE* fileWritePtr = fopen("output.txt", "w");
+    
+    if (fileReadPtr == NULL || fileWritePtr == NULL) {
+        printf("Error opening file.\n");
         return 1;
     }
 
