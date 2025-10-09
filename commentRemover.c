@@ -81,14 +81,14 @@ int main(int argc , char* argv[]){
 
     FILE* fileReadPtr = fopen(filename, "r");
     FILE* fileWritePtr = fopen("output.txt", "w");
+        
+    get_file_extension(filename, fileExtension);
     
     if (fileReadPtr == NULL || fileWritePtr == NULL) {
-        printf("Error opening file.\n");
+        printf("Error opening file\n");
         return 1;
     }
 
-
-    get_file_extension(filename, fileExtension);
 
     write_to_new_file_without_comments(fileReadPtr,fileWritePtr);
 
