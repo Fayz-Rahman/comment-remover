@@ -23,14 +23,14 @@ bool filename_too_long (char* filename){
     return false;
 }
 
-void get_file_extension(char *filename, char *fileExtension){
+bool successfully_get_file_extension(char *filename, char *fileExtension){
     char* extensionSeparatorIndex = strrchr(filename, '.');
 
     if(extensionSeparatorIndex == NULL){
-        printf("Invalid filename: File name must include a valid extension (e.g., .py, .c, .js)\n");
-        exit(1);
+        return false;
     }else{
         strcpy(fileExtension,extensionSeparatorIndex+1);
+        return true;
     }
 }
 
@@ -66,12 +66,12 @@ void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
 int main(int argc , char* argv[]){
 
     if(!is_input_file_provided(argc)){
-        printf("no input file is provided\nUsage: %s <filename>\n",argv[0]);
+        fprintf(stderr, "no input file is provided\nUsage: %s <filename>\n",argv[0]);
         return 1;
     }
 
     if(filename_too_long(argv[1])==true){
-        printf("Error: filename too long (max %d chars)\n",MAX_FILENAME_LENGTH);
+        fprintf(stderr, "Error: filename too long (max %d chars)\n",MAX_FILENAME_LENGTH);
         return 1;
     }
 
@@ -81,11 +81,14 @@ int main(int argc , char* argv[]){
 
     FILE* fileReadPtr = fopen(filename, "r");
     FILE* fileWritePtr = fopen("output.txt", "w");
-        
-    get_file_extension(filename, fileExtension);
     
-    if (fileReadPtr == NULL || fileWritePtr == NULL) {
-        printf("Error opening file\n");
+    if(successfully_get_file_extension(filename, fileExtension) == false){
+        fprintf(stderr, "Invalid filename: File name must include a valid extension (e.g., .py, .c, .js)\n");
+        return 1;
+    }
+    
+    if(fileReadPtr == NULL || fileWritePtr == NULL){
+        perror("Error opening file");
         return 1;
     }
 
