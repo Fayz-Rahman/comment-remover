@@ -34,25 +34,29 @@ void get_file_extension(char *filename, char *fileExtension){
     }
 }
 
+bool detect_single_line_comment (int character, FILE* fileReadPtr){
+    if(character == '/'){
+        int nextCharacter = fgetc(fileReadPtr);
+        if(nextCharacter == '/'){
+                return true;
+        } else {
+            ungetc(nextCharacter, fileReadPtr);
+            return false;
+        }
+    }
+    return false;
+}
+
 void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
     int character;
-    bool commentDelimiterFound = false;
 
     while ((character = fgetc(fileReadPtr)) != EOF) {
-        if(character == '/'){
-            int nextCharacter = fgetc(fileReadPtr);
-            if(nextCharacter == '/'){
-                commentDelimiterFound = true;
-            } else {
-                ungetc(nextCharacter, fileReadPtr);
-            }
-        }
+        bool singleLineDelimiterDetected = detect_single_line_comment(character, fileReadPtr);
 
-        if(commentDelimiterFound && character != '\n'){
-            continue;
-        }
-        if(character == '\n'){
-            commentDelimiterFound = false;
+        if(singleLineDelimiterDetected){
+            while ( character != EOF && character !='\n'){
+                character = fgetc(fileReadPtr);
+            }
         }
 
         fputc(character, fileWritePtr);
