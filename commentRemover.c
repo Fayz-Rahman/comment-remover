@@ -47,19 +47,40 @@ bool detect_single_line_comment (int character, FILE* fileReadPtr){
     return false;
 }
 
+void string_literal_detector(int character, int previousCharacter, bool* toggle){
+    if(character == '"' && previousCharacter != '\\'){
+        if((*toggle) == true){
+            (*toggle) = false;
+        }else{
+            (*toggle) = true;
+        }
+    }
+}
+
 void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
     int character;
+    int characterSnapshot = 0;
+    bool toggle = false;
 
     while ((character = fgetc(fileReadPtr)) != EOF) {
-        bool singleLineDelimiterDetected = detect_single_line_comment(character, fileReadPtr);
+        string_literal_detector(character, characterSnapshot, &toggle);
 
-        if(singleLineDelimiterDetected){
+        if(toggle){
+            fputc(character, fileWritePtr);
+        }else if(detect_single_line_comment(character, fileReadPtr)){
+
             while ( character != EOF && character !='\n'){
                 character = fgetc(fileReadPtr);
             }
-        }
 
-        fputc(character, fileWritePtr);
+            if(character == '\n'){
+                fputc('\n', fileWritePtr);
+            }
+        }else{
+            fputc(character, fileWritePtr);
+        }
+        
+        characterSnapshot = character;
     }
 }
 
