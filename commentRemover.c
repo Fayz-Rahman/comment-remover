@@ -13,6 +13,13 @@ bool is_input_file_provided(int argc){
     return true;
 }
 
+bool has_extra_arguments(int argc){
+    if(argc>2){
+        return true;
+    }
+    return false;
+}
+
 bool filename_too_long (char* filename){
     size_t length_of_filename_input = strlen(filename);
 
@@ -117,7 +124,12 @@ void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
 int main(int argc , char* argv[]){
 
     if(!is_input_file_provided(argc)){
-        fprintf(stderr, "no input file is provided\nUsage: %s <filename>\n",argv[0]);
+        fprintf(stderr, "Error: no input file is provided\nUsage: %s <filename>\n",argv[0]);
+        return 1;
+    }
+
+    if(has_extra_arguments(argc)){
+        fprintf(stderr, "Error: Too many arguments provided.\nUsage: %s <filename>\n",argv[0]);
         return 1;
     }
 
@@ -129,6 +141,8 @@ int main(int argc , char* argv[]){
     char filename[MAX_FILENAME_LENGTH];
     strcpy(filename, argv[1]);
     char fileExtension[10];
+    char outputFilename [MAX_FILENAME_LENGTH+15]="commentless__";
+    strcat(outputFilename, filename);
 
     if(successfully_get_file_extension(filename, fileExtension) == false){
         fprintf(stderr, "Invalid filename: File name must include a valid extension (e.g., .py, .c, .js)\n");
@@ -136,14 +150,14 @@ int main(int argc , char* argv[]){
     }
 
     if(strcmp(fileExtension,"c") != 0 && strcmp(fileExtension,"h") != 0){
-        fprintf(stderr, "Sorry '.%s' files aren’t supported yet.\n", fileExtension);
+        fprintf(stderr, "Sorry '.%s' files aren't supported yet.\n", fileExtension);
         fprintf(stderr, "Right now this program only works with C files (.c, .h).\n");
         fprintf(stderr, "Support for more languages will be added in future updates.\n");
         return 1;
     }
 
     FILE* fileReadPtr = fopen(filename, "r");
-    FILE* fileWritePtr = fopen("output.txt", "w");
+    FILE* fileWritePtr = fopen(outputFilename, "w");
     
     if(fileReadPtr == NULL || fileWritePtr == NULL){
         perror("Error opening file");
