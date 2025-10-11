@@ -130,19 +130,25 @@ int main(int argc , char* argv[]){
     strcpy(filename, argv[1]);
     char fileExtension[10];
 
-    FILE* fileReadPtr = fopen(filename, "r");
-    FILE* fileWritePtr = fopen("output.txt", "w");
-    
     if(successfully_get_file_extension(filename, fileExtension) == false){
         fprintf(stderr, "Invalid filename: File name must include a valid extension (e.g., .py, .c, .js)\n");
         return 1;
     }
+
+    if(strcmp(fileExtension,"c") != 0 && strcmp(fileExtension,"h") != 0){
+        fprintf(stderr, "Sorry '.%s' files aren’t supported yet.\n", fileExtension);
+        fprintf(stderr, "Right now this program only works with C files (.c, .h).\n");
+        fprintf(stderr, "Support for more languages will be added in future updates.\n");
+        return 1;
+    }
+
+    FILE* fileReadPtr = fopen(filename, "r");
+    FILE* fileWritePtr = fopen("output.txt", "w");
     
     if(fileReadPtr == NULL || fileWritePtr == NULL){
         perror("Error opening file");
         return 1;
     }
-
 
     write_to_new_file_without_comments(fileReadPtr,fileWritePtr);
 
