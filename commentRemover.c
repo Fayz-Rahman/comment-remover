@@ -57,6 +57,31 @@ void string_literal_detector(int character, int previousCharacter, bool* toggle)
     }
 }
 
+bool multi_line_comment_start(int character, FILE* fileReadPtr){
+    if(character == '/'){
+        int nextCharacter = getc(fileReadPtr);
+        if(nextCharacter == '*'){
+            return true;
+        }else{
+            ungetc(nextCharacter, fileReadPtr);
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+bool multi_line_comment_end(int character, FILE* fileReadPtr){
+    if(character == '*'){
+        int nextCharacter = getc(fileReadPtr);
+        if(nextCharacter == '/'){
+            return true;
+        }else{
+            ungetc(nextCharacter, fileReadPtr);
+        }
+    }
+}
+
 void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
     int character;
     int characterSnapshot = 0;
@@ -76,6 +101,11 @@ void write_to_new_file_without_comments(FILE* fileReadPtr, FILE* fileWritePtr){
             if(character == '\n'){
                 fputc('\n', fileWritePtr);
             }
+        }else if(multi_line_comment_start(character, fileReadPtr)){
+            while (character != EOF && !multi_line_comment_end(character, fileReadPtr)){
+                character = fgetc(fileReadPtr);
+            }
+            
         }else{
             fputc(character, fileWritePtr);
         }
